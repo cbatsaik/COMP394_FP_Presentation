@@ -1,6 +1,10 @@
 ---
-title: "COMP394_FP_presentation"
-format: revealjs
+title: "COMP394 Project Presentation"
+author: "Charles Batsaikha, William Acosta Lora, Daisy Chan"
+format: 
+  revealjs: 
+    theme: moon
+    chalkboard: true
 editor: visual
 ---
 
