@@ -10,7 +10,7 @@
 <link href="COMP394_FP_presentation_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.5.57">
 
-  <meta name="author" content="Charles Batsaikha, William Acosta Lora, Daisy Chan">
+  <meta name="author" content="Charles Batsaikhan, William Acosta Lora, Daisy Chan">
   <title>COMP394 Project Presentation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -333,14 +333,66 @@
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-Charles Batsaikha, William Acosta Lora, Daisy Chan 
+Charles Batsaikhan, William Acosta Lora, Daisy Chan 
 </div>
 </div>
 </div>
 
 </section>
-<section id="introduction-and-research-question" class="slide level2">
+<section id="introduction-and-research-question" class="slide level2 scrollable smaller">
 <h2>Introduction and Research Question</h2>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Introduction</a></li><li><a href="#tabset-1-2">Research Question</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<ul>
+<li>What we’re studying:
+<ul>
+<li>Reddit’s r/AmITheAsshole (AITA) forum, where users vote YTA (you’re the asshole), NTA (not the asshole), ESH (everyone sucks here), or NAH (no assholes here).</li>
+</ul></li>
+<li>Why it matters
+<ul>
+<li>These public “verdicts” shape reputations online and fuel cancel‑culture talk.</li>
+</ul></li>
+<li>Our data
+<ul>
+<li>Hugging Face dataset by Oguzz07</li>
+<li>Posts + 1M comments, verdict labels kept, usernames removed for privacy.</li>
+</ul></li>
+</ul>
+</div>
+<div id="tabset-1-2">
+<ul>
+<li>Research Question:
+<ul>
+<li>Testing whether our sentinment is directed towards our original poster (OP) or other parties??</li>
+</ul></li>
+<li>How we’ll test it:
+<ul>
+<li>BERT Topic Model</li>
+<li>Gemini</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>We’re diving into r/AmITheAsshole, a subreddit where people post real‑life dilemmas and get judged by strangers. Each comment carries a clear verdict—you’re the jerk (YTA), you’re not (NTA), or one of two middle‑ground options. That makes AITA a gold‑mine for studying moral judgment online.</p>
+<p>Why should we care? Because these verdicts don’t stay on Reddit. They end up in news stories, TikToks, and sometimes real‑world backlash—so understanding how people reach them is important.</p>
+<p>We grabbed a public dataset (credits to the user Oguzz07) that includes over a million comments. We stripped out usernames and links to keep things anonymous.</p>
+<p>Our main research question is simple: if we run a standard sentiment model—basically a tool that scores text as positive or negative—will it line up with what the crowd decided? And if it doesn’t, what kinds of words or writing styles throw it off?</p>
+<p>To test this, we’ll clean the text, feed it to BERT for sentiment scores, and then check how often those scores match the actual YTA, NTA, ESH, or NAH tags. The accuracy numbers—and the mistakes—will tell us a lot about whether tone alone is enough to read moral judgment online.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="methods-overview" class="slide level2">
 <h2>Methods Overview</h2>

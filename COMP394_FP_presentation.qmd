@@ -1,6 +1,6 @@
 ---
 title: "COMP394 Project Presentation"
-author: "Charles Batsaikha, William Acosta Lora, Daisy Chan"
+author: "Charles Batsaikhan, William Acosta Lora, Daisy Chan"
 format: 
   revealjs: 
     theme: moon
@@ -8,10 +8,52 @@ format:
 editor: visual
 ---
 
-## Introduction and Research Question
+## Introduction and Research Question {.scrollable .smaller}
+
+::: {.panel-tabset}
+
+### Introduction
+
+- What we’re studying:
+  - Reddit’s r/AmITheAsshole (AITA) forum, where users vote YTA (you’re the asshole), NTA (not the asshole), ESH (everyone sucks here), or NAH (no assholes here).
+  
+- Why it matters
+  - These public “verdicts” shape reputations online and fuel cancel‑culture talk.
+  
+- Our data
+  - Hugging Face dataset by Oguzz07
+  - Posts + 1M comments, verdict labels kept, usernames removed for privacy.
+
+
+  
+
+
+### Research Question
+
+- Research Question:
+  - Testing whether our sentinment is directed towards our original poster (OP) or other parties??
+  
+- How we’ll test it:
+  - BERT Topic Model
+  - Gemini
+
+:::
 
 
 
+::: notes
+We’re diving into r/AmITheAsshole, a subreddit where people post real‑life dilemmas and get judged by strangers. Each comment carries a clear verdict—you’re the jerk (YTA), you’re not (NTA), or one of two middle‑ground options. That makes AITA a gold‑mine for studying moral judgment online.
+
+Why should we care? Because these verdicts don’t stay on Reddit. They end up in news stories, TikToks, and sometimes real‑world backlash—so understanding how people reach them is important.
+
+We grabbed a public dataset (credits to the user Oguzz07) that includes over a million comments. We stripped out usernames and links to keep things anonymous.
+
+Our main research question is simple: if we run a standard sentiment model—basically a tool that scores text as positive or negative—will it line up with what the crowd decided? And if it doesn’t, what kinds of words or writing styles throw it off?
+
+To test this, we’ll clean the text, feed it to BERT for sentiment scores, and then check how often those scores match the actual YTA, NTA, ESH, or NAH tags. The accuracy numbers—and the mistakes—will tell us a lot about whether tone alone is enough to read moral judgment online.
+
+
+:::
 
 ## Methods Overview
 
