@@ -8,7 +8,7 @@
 <link href="COMP394_FP_presentation_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="COMP394_FP_presentation_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="COMP394_FP_presentation_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.5.57">
+  <meta name="generator" content="quarto-1.4.555">
 
   <meta name="author" content="Charles Batsaikhan, William Acosta Lora, Daisy Chan">
   <title>COMP394 Project Presentation</title>
@@ -357,7 +357,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <li>Our data
 <ul>
 <li>Hugging Face dataset by Oguzz07</li>
-<li>Posts + 1M comments, verdict labels kept, usernames removed for privacy.</li>
+<li>Posts 900 comments, verdict labels kept, usernames removed for privacy.</li>
 </ul></li>
 </ul>
 </div>
@@ -365,11 +365,11 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <ul>
 <li>Research Question:
 <ul>
-<li>Testing whether our sentinment is directed towards our original poster (OP) or other parties??</li>
+<li>Testing whether our sentiment is directed towards our original poster (OP) or other parties??</li>
 </ul></li>
 <li>How we’ll test it:
 <ul>
-<li>BERT Topic Model</li>
+<li>BERT Model</li>
 <li>Gemini</li>
 </ul></li>
 </ul>
@@ -379,7 +379,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <aside class="notes">
 <p>We’re diving into r/AmITheAsshole, a subreddit where people post real‑life dilemmas and get judged by strangers. Each comment carries a clear verdict—you’re the jerk (YTA), you’re not (NTA), or one of two middle‑ground options. That makes AITA a gold‑mine for studying moral judgment online.</p>
 <p>Why should we care? Because these verdicts don’t stay on Reddit. They end up in news stories, TikToks, and sometimes real‑world backlash—so understanding how people reach them is important.</p>
-<p>We grabbed a public dataset (credits to the user Oguzz07) that includes over a million comments. We stripped out usernames and links to keep things anonymous.</p>
+<p>We grabbed a public dataset (credits to the user Oguzz07) that includes 900+ comments. We stripped out usernames and links to keep things anonymous.</p>
 <p>Our main research question is simple: if we run a standard sentiment model—basically a tool that scores text as positive or negative—will it line up with what the crowd decided? And if it doesn’t, what kinds of words or writing styles throw it off?</p>
 <p>To test this, we’ll clean the text, feed it to BERT for sentiment scores, and then check how often those scores match the actual YTA, NTA, ESH, or NAH tags. The accuracy numbers—and the mistakes—will tell us a lot about whether tone alone is enough to read moral judgment online.</p>
 <style type="text/css">
@@ -394,23 +394,319 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
           display:block!important;
       }</style></aside>
 </section>
-<section id="methods-overview" class="slide level2">
+<section id="methods-overview" class="slide level2 scrollable smaller">
 <h2>Methods Overview</h2>
+<ul>
+<li><strong>Goal:</strong> Determine whether AITA comment sentiment is directed at the Original Poster (OP) or someone else.</li>
+<li><strong>Step 1: Data Mapping</strong>
+<ul>
+<li>Used 5 original sentiment labels: <em>positive, negative, neutral, neutral (positive), neutral (negative)</em>.</li>
+<li>Mapped to two categories:
+<ul>
+<li><strong>OP</strong> = Positive, Neutral (Positive), Neutral</li>
+<li><strong>Other</strong> = Negative, Neutral (Negative)</li>
+</ul></li>
+</ul></li>
+<li><strong>Step 2: Gemini Predictions</strong>
+<ul>
+<li>Prompted Gemini to classify each response: <em>“Is this criticizing the OP or someone else?”</em></li>
+<li>Saved Gemini’s binary prediction: “OP” or “Other”</li>
+</ul></li>
+<li><strong>Step 3: BERT Model</strong>
+<ul>
+<li>Used <code>bert-base-uncased</code> in a text classification pipeline</li>
+<li>Ran responses through BERT with truncation at 512 tokens</li>
+<li>Saved predicted labels: “OP” or “Other”</li>
+</ul></li>
+<li><strong>Step 4: Evaluation</strong>
+<ul>
+<li>Compared both models to mapped sentiment labels using:
+<ul>
+<li>Confusion matrices</li>
+<li>Precision, recall, F1-score</li>
+<li>Chi-square test to compare prediction distributions</li>
+</ul></li>
+</ul></li>
+</ul>
 </section>
-<section id="data-collection-and-annotation" class="slide level2">
+<section id="data-collection-and-annotation" class="slide level2 scrollable smaller">
 <h2>Data Collection and Annotation</h2>
+<ul>
+<li><strong>Source:</strong>
+<ul>
+<li>Used the <a href="https://huggingface.co/datasets/Oguzz07/AmItheAsshole">r/AmITheAsshole dataset</a> from Hugging Face</li>
+<li>Created by user Oguzz07</li>
+<li>Includes: Post text, comment responses, and final subreddit verdicts (YTA, NTA, ESH, NAH)</li>
+</ul></li>
+<li><strong>Volume:</strong>
+<ul>
+<li>Over 1 million comments total</li>
+<li>Focused on a subset of responses that had been sentiment-labeled</li>
+</ul></li>
+<li><strong>Annotation Strategy:</strong>
+<ul>
+<li>Dataset included human-assigned sentiment labels:
+<ul>
+<li><em>Positive, Negative, Neutral (positive), Neutral (negative), Neutral</em></li>
+</ul></li>
+<li>We mapped these into binary classes for target inference:
+<ul>
+<li><strong>OP</strong> = Positive, Neutral (positive), Neutral</li>
+<li><strong>Other</strong> = Negative, Neutral (negative)</li>
+</ul></li>
+<li>Assumption: Sentiment directed at someone in the post reflects the target of criticism</li>
+</ul></li>
+<li><strong>Goal of Annotation:</strong>
+<ul>
+<li>Create a “ground truth” for training/evaluating language models</li>
+<li>Labels do not directly say “OP” or “Other,” so this mapping is our interpretive layer</li>
+</ul></li>
+</ul>
 </section>
-<section id="analysis-methods" class="slide level2">
+<section id="analysis-methods" class="slide level2 scrollable smaller">
 <h2>Analysis Methods</h2>
+<ul>
+<li><strong>Binary Classification Task:</strong>
+<ul>
+<li>Determine whether a Reddit response targets:
+<ul>
+<li><strong>OP</strong> (Original Poster)</li>
+<li><strong>Other</strong> (another person mentioned)</li>
+</ul></li>
+</ul></li>
+<li><strong>Model 1: Gemini (Google API)</strong>
+<ul>
+<li>Prompted with:<br>
+&gt; “Analyze the following Reddit post and determine the sentiment of the response. If the response criticizes the Original Poster (OP), say ‘Other’. If the response criticizes someone else (not OP), say ‘OP’. Only respond with ‘OP’ or ‘Other’. Here is the Reddit post:”{response}“”</li>
+<li>Collected responses via API call</li>
+<li>Stored predictions as “OP” or “Other”</li>
+</ul></li>
+<li><strong>Model 2: BERT (bert-base-uncased)</strong>
+<ul>
+<li>Used Hugging Face’s text classification pipeline</li>
+<li>Inputs truncated at 512 tokens</li>
+<li>Model outputs label: “LABEL_0” or “LABEL_1” → mapped to “OP” or “Other”</li>
+</ul></li>
+<li><strong>Evaluation:</strong>
+<ul>
+<li>Compared both models to ground truth (mapped sentiment labels)</li>
+<li>Used:
+<ul>
+<li><strong>Confusion Matrix</strong></li>
+<li><strong>Precision, Recall, F1-Score</strong></li>
+<li><strong>Chi-Square Test</strong> to assess if the two models differ significantly in behavior</li>
+</ul></li>
+</ul></li>
+<li><strong>Tools:</strong>
+<ul>
+<li>Python (Pandas, Transformers, SciPy, Seaborn)</li>
+<li>Google Colab for experimentation</li>
+</ul></li>
+</ul>
 </section>
-<section id="results" class="slide level2">
+<section id="chi-square-test" class="slide level2 scrollable">
+<h2>Chi-Square Test</h2>
+<ul>
+<li><p><strong>Why a chi-square test?</strong></p>
+<ul>
+<li>To check if Gemini and BERT make significantly different types of predictions</li>
+<li>Compares how each model distributes errors (e.g., false positives, false negatives)</li>
+</ul></li>
+<li><p><strong>Contingency Table Input:</strong></p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 18%">
+<col style="width: 22%">
+<col style="width: 22%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>True OP → OP</th>
+<th>True OP → Other</th>
+<th>True Other → OP</th>
+<th>True Other → Other</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gemini</td>
+<td>714</td>
+<td>97</td>
+<td>47</td>
+<td>24</td>
+</tr>
+<tr class="even">
+<td>BERT</td>
+<td>666</td>
+<td>201</td>
+<td>60</td>
+<td>19</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>Results:</strong></p>
+<ul>
+<li>Chi² = 37.93<br>
+</li>
+<li>p-value = 2.92 × 10⁻⁸<br>
+</li>
+<li>DoF = 3</li>
+</ul></li>
+<li><p><strong>Interpretation:</strong></p>
+<ul>
+<li>Strong evidence that BERT and Gemini behave differently</li>
+<li>Supports our argument that model choice matters in moral sentiment analysis</li>
+</ul></li>
+</ul>
+</section>
+<section id="results" class="slide level2 scrollable smaller">
 <h2>Results</h2>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Gemini Performance</a></li><li><a href="#tabset-2-2">BERT Performance</a></li><li><a href="#tabset-2-3">Comparison: Chi-Square Test</a></li><li><a href="#tabset-2-4">Confusion Matrix Heatmaps</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<ul>
+<li><strong>Confusion Matrix:</strong>
+<ul>
+<li>True OP → OP: 714<br>
+</li>
+<li>True OP → Other: 97<br>
+</li>
+<li>True Other → OP: 47<br>
+</li>
+<li>True Other → Other: 24</li>
+</ul></li>
+<li><strong>Metrics:</strong>
+<ul>
+<li>Accuracy: <strong>84%</strong></li>
+<li>OP F1-score: <strong>0.91</strong></li>
+<li>Other F1-score: <strong>0.25</strong></li>
+<li>Model tends to <strong>favor OP classification</strong>, underperforms on “Other”</li>
+</ul></li>
+</ul>
+</div>
+<div id="tabset-2-2">
+<ul>
+<li><strong>Confusion Matrix:</strong>
+<ul>
+<li>True OP → OP: 666<br>
+</li>
+<li>True OP → Other: 201<br>
+</li>
+<li>True Other → OP: 60<br>
+</li>
+<li>True Other → Other: 19</li>
+</ul></li>
+<li><strong>Metrics:</strong>
+<ul>
+<li>Accuracy: <strong>72%</strong></li>
+<li>OP F1-score: <strong>0.84</strong></li>
+<li>Other F1-score: <strong>0.13</strong></li>
+<li>Weaker than Gemini overall, especially on minority class (“Other”)</li>
+</ul></li>
+</ul>
+</div>
+<div id="tabset-2-3">
+<ul>
+<li><strong>Statistical Test:</strong> χ² = 37.93, p &lt; 0.00000003</li>
+<li><strong>Interpretation:</strong> Gemini and BERT <strong>distribute predictions significantly differently</strong></li>
+<li><strong>Implication:</strong> Model choice affects who we think is being criticized in AITA — not all LLMs “read” judgment the same way</li>
+</ul>
+</div>
+<div id="tabset-2-4">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="heatmap.png"></p>
+<figcaption>Confusion matrices for Gemini and BERT</figcaption>
+</figure>
+</div>
+<ul>
+<li><strong>Gemini (left):</strong> Stronger performance, especially for OP detection<br>
+</li>
+<li><strong>BERT (right):</strong> Weaker precision and recall on “Other” predictions<br>
+</li>
+<li>This visual shows how both models skew toward OP classification</li>
+</ul>
+</div>
+</div>
+</div>
 </section>
-<section id="conclusion-and-limitations" class="slide level2">
+<section id="conclusion-and-limitations" class="slide level2 scrollable smaller">
 <h2>Conclusion and Limitations</h2>
+<div class="panel-tabset">
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Conclusion</a></li><li><a href="#tabset-3-2">Limitations</a></li><li><a href="#tabset-3-3">Future Directions</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1">
+<ul>
+<li><strong>Key Insight:</strong>
+<ul>
+<li>Sentiment models like BERT and Gemini can approximate moral judgments in r/AmITheAsshole (AITA) discussions.</li>
+</ul></li>
+<li><strong>Model Comparison:</strong>
+<ul>
+<li><strong>Gemini</strong> outperformed BERT in identifying when criticism targets the OP.</li>
+<li><strong>BERT</strong> struggled more with detecting criticism directed at others.</li>
+</ul></li>
+<li><strong>Statistical Significance:</strong>
+<ul>
+<li>A chi-square test revealed significant differences in prediction distributions between the two models (χ² = 37.93, p &lt; 0.00000003).</li>
+</ul></li>
+<li><strong>Implication:</strong>
+<ul>
+<li>The choice of language model significantly influences the interpretation of moral judgments in online discourse.</li>
+</ul></li>
+</ul>
+</div>
+<div id="tabset-3-2">
+<ul>
+<li><strong>Label Mapping:</strong>
+<ul>
+<li>The binary classification of “OP” vs.&nbsp;“Other” was derived from sentiment labels, which may not perfectly capture the target of criticism.</li>
+</ul></li>
+<li><strong>Model Training:</strong>
+<ul>
+<li>BERT was used without fine-tuning on AITA-specific data, potentially limiting its effectiveness.</li>
+</ul></li>
+<li><strong>Data Constraints:</strong>
+<ul>
+<li>Some responses exceeded the 512-token limit of BERT, leading to truncation and possible loss of context.</li>
+</ul></li>
+<li><strong>Annotation Ambiguity:</strong>
+<ul>
+<li>The interpretation of sentiment labels as indicators of criticism direction introduces subjectivity.</li>
+</ul></li>
+</ul>
+</div>
+<div id="tabset-3-3">
+<ul>
+<li><strong>Model Enhancement:</strong>
+<ul>
+<li>Fine-tune BERT on AITA-specific data to improve its understanding of nuanced moral judgments.</li>
+</ul></li>
+<li><strong>Expanded Annotation:</strong>
+<ul>
+<li>Incorporate more detailed annotations to better capture the directionality of criticism.</li>
+</ul></li>
+<li><strong>Broader Analysis:</strong>
+<ul>
+<li>Explore additional linguistic features and context to enhance model predictions.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
 </section>
 <section id="questions" class="slide level2">
 <h2>Questions?</h2>
+</section>
+<section id="thanks" class="slide level2">
+<h2>Thanks !!</h2>
+</section>
+<section class="slide level2">
+
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
@@ -661,7 +957,18 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
         }
         return false;
       }
-      const onCopySuccess = function(e) {
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        text: function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+      });
+      clipboard.on('success', function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -693,29 +1000,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
         }, 1000);
         // clear code selection
         e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
       });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        // For code content inside modals, clipBoardJS needs to be initialized with a container option
-        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -723,7 +1008,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {
