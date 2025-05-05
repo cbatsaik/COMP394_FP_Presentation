@@ -57,12 +57,15 @@ To test this, we’ll clean the text, feed it to BERT for sentiment scores, and 
     -   Used `bert-base-uncased` in a text classification pipeline
     -   Ran responses through BERT with truncation at 512 tokens
     -   Saved predicted labels: "OP" or "Other"
+- **Unsupervised Topic Check (LDA)**
+  - Ran two LDA setups:
+    1. 5‑topic model *with* stop‑words (baseline sanity‑check)  
+    2. 5‑ and 10‑topic models *without* stop‑words (meaningful themes)
 -   **Step 4: Evaluation**
     -   Compared both models to mapped sentiment labels using:
         -   Confusion matrices
         -   Precision, recall, F1-score
         -   Chi-square test to compare prediction distributions
-
 
 ## Data Collection and Annotation {.scrollable .smaller}
 
@@ -173,10 +176,74 @@ To test this, we’ll clean the text, feed it to BERT for sentiment scores, and 
 
 ![Confusion matrices for Gemini and BERT](heatmap.png)
 
-- **Gemini (left):** Stronger performance, especially for OP detection  
-- **BERT (right):** Weaker precision and recall on “Other” predictions  
-- This visual shows how both models skew toward OP classification
+-   **Gemini (left):** Stronger performance, especially for OP detection\
+-   **BERT (right):** Weaker precision and recall on “Other” predictions\
+-   This visual shows how both models skew toward OP classification
 
+
+### LDA Topic Exploration
+
+
+Baseline (5 Topics, with stop-words)
+
+Dominated by common function words (you, the, to, and).
+
+No meaningful topics emerged.
+
+
+5-Topic Model (stop-words removed)
+
+
+| **Topic** | **Top Keywords**                    | **Interpretation**         |
+| --------- | ----------------------------------- | -------------------------- |
+| 1         | wife, child, daughter, son, parents | Parenting / Kids           |
+| 2         | money, house, job, pay              | Finances & Housing         |
+| 3         | family, husband, wife, mother, food | OP vs Spouse & In-laws     |
+| 4         | sorry, better, want, life, good     | Self-improvement / Apology |
+| 5         | brother, sister, parents, wedding   | Siblings & Weddings        |
+
+10-Topic Model (stop words removed)
+
+
+| **Topic** | **Top Keywords**                | **Interpretation**                   |
+| --------- | ------------------------------- | ------------------------------------ |
+| 1         | wife, daughter, dad, discipline | Parental favoritism / Discipline     |
+| 2         | money, job, kids, cost-sharing  | Financial Responsibility             |
+| 3         | mom, wedding, pay, funding      | Event Payments & Parental Funding    |
+| 4         | better, life, relationship      | Self-improvement & Leaving Toxicity  |
+| 5         | brother, parents, fairness      | Sibling Fairness & Childcare Burdens |
+| 6         | divorce, custody, awards        | Updates & Legal Family Issues        |
+| 7         | friend, happy, asshole          | Friendship & Social Conflicts        |
+| 8         | right, eat, son, dietary        | Dietary & Health Disputes            |
+| 9         | support, legal, financial       | Legal Advice & Financial Contracts   |
+| 10        | sister, wedding, dress, kids    | Wedding Attire & Child-free Weddings |
+
+::: {.notes}
+nitially, we tested a baseline model using 5 topics with all words included—but this mainly captured common grammar words, providing no useful insights.
+
+After removing stop-words (common English words that don’t convey specific meaning), clear and meaningful topics emerged.
+
+A 5-topic LDA model revealed broad, easily recognizable themes common in AITA discussions:
+
+Parenting and childcare disputes
+
+Financial issues, including rent or inheritance disagreements
+
+Spousal conflicts, particularly involving domestic boundaries and in-laws
+
+Personal growth, apologies, and self-improvement narratives
+
+Sibling rivalries and wedding-related arguments
+
+Expanding to a 10-topic LDA model allowed us to capture more detailed nuances within each broad theme, highlighting specific situations:
+
+For example, financial issues separated into topics such as job-related money arguments and parental financial support for events.
+
+Family-related conflicts became more nuanced, distinguishing between sibling fairness and parental favoritism.
+
+These identified topics align closely with real-world moral conflicts frequently observed on the AITA subreddit, giving strong face validity to our data and supporting our overall analysis.
+
+:::
 
 :::
 
@@ -216,9 +283,8 @@ To test this, we’ll clean the text, feed it to BERT for sentiment scores, and 
     -   Explore additional linguistic features and context to enhance model predictions.
 :::
 
-## Questions? 
+## Questions?
+
 ## Thanks !!
-
-
 
 ------------------------------------------------------------------------
