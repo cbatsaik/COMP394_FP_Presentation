@@ -8,7 +8,7 @@
 <link href="COMP394_FP_presentation_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="COMP394_FP_presentation_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="COMP394_FP_presentation_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.5.57">
+  <meta name="generator" content="quarto-1.4.555">
 
   <meta name="author" content="Charles Batsaikhan, William Acosta Lora, Daisy Chan">
   <title>COMP394 Project Presentation</title>
@@ -377,7 +377,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 </div>
 </div>
 <aside class="notes">
-<p>We’re diving into r/AmITheAsshole, a subreddit where people post real‑life dilemmas and get judged by strangers. Each comment carries a clear verdict—you’re the jerk (YTA), you’re not (NTA), or one of two middle‑ground options. That makes AITA a gold‑mine for studying moral judgment online.</p>
+<p>Daisy+ William We’re diving into r/AmITheAsshole, a subreddit where people post real‑life dilemmas and get judged by strangers. Each comment carries a clear verdict—you’re the jerk (YTA), you’re not (NTA), or one of two middle‑ground options. That makes AITA a gold‑mine for studying moral judgment online.</p>
 <p>Why should we care? Because these verdicts don’t stay on Reddit. They end up in news stories, TikToks, and sometimes real‑world backlash—so understanding how people reach them is important.</p>
 <p>Our dataset is from Hugging Face and includes 900+ posts and labeled comments. We cleaned it and focused on responses that had clear sentiment labels. Our core question: can we predict who’s being criticized in a comment? Is it the original poster (OP), or someone else?</p>
 <p>To test this, we compare two tools: Gemini (a large language model via API) and BERT (a popular open-source NLP model). This sets the stage for analyzing how each interprets tone and direction of criticism.</p>
@@ -437,7 +437,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 </ul></li>
 </ul>
 <aside class="notes">
-<p>Here’s how we structured our approach.</p>
+<p>Charles Here’s how we structured our approach.</p>
 <p>First, we mapped all sentiment labels into binary classes. Positive, neutral-positive, and neutral were assumed to refer to the OP — since those sentiments tend to be supportive or neutral toward the main poster. Negative and neutral-negative were mapped to “Other,” assuming criticism was directed elsewhere.</p>
 <p>Then we ran two models:</p>
 <ul>
@@ -468,14 +468,27 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 </ul></li>
 <li><strong>Volume:</strong>
 <ul>
-<li>Over 1 million comments total</li>
+<li>Over 900+ comments total</li>
 <li>Focused on a subset of responses that had been sentiment-labeled</li>
 </ul></li>
 <li><strong>Annotation Strategy:</strong>
 <ul>
-<li>Dataset included human-assigned sentiment labels:
+<li>Constructed a rubric of sentiment on a Positive-Negative scale
 <ul>
 <li><em>Positive, Negative, Neutral (positive), Neutral (negative), Neutral</em></li>
+</ul></li>
+<li>Execution: We each annotated 50 responses by hand (150 total), and submitted the remaining 750+ entries to Gemini with our predefined labels to finish annotation process
+<ul>
+<li><p>Prompt used:</p>
+<p>“Given the following Reddit comment from the r/AmITheAsshole subreddit, classify its sentiment based on the following rubric:</p>
+<ul>
+<li><p><strong>Positive</strong>: Clearly supportive, kind, or affirming tone.</p>
+<p><strong>Negative</strong>: Clearly critical, hostile, or harsh in tone.</p>
+<p><strong>Neutral (positive)</strong>: Neutral in content, but leans slightly supportive or understanding.</p>
+<p><strong>Neutral (negative)</strong>: Neutral in content, but leans slightly critical or disapproving.</p>
+<p><strong>Neutral</strong>: Fully neutral in tone and content</p></li>
+</ul>
+<p>Classify the sentiment of the comment accordingly and return only the label.”</p></li>
 </ul></li>
 <li>We mapped these into binary classes for target inference:
 <ul>
@@ -491,9 +504,10 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 </ul></li>
 </ul>
 <aside class="notes">
-<p>Let’s talk about our data.</p>
+<p>Daisy+ William Let’s talk about our data.</p>
 <p>We used the r/AmITheAsshole dataset from Hugging Face, created by Oguzz07. It includes the post content, user comments, and final subreddit verdicts. Our focus was on the comments — specifically those that already had sentiment labels.</p>
-<p>These labels were manually assigned and include not just “positive” or “negative,” but nuanced categories like “neutral (positive)” or “neutral (negative).” That granularity is great for analyzing tone.</p>
+<p>We created an annotation scheme for a scale of sentiment from positive to negative- including 5 levels within that scale. The nuanced categories like “neutral (positive)” or “neutral (negative).” That granularity is great for analyzing tone.</p>
+<p>Using this scheme, we each hand-annotated 50 entries of responses each, cumulating to 150 labelled responses. For the remaining 750+ entries, we input them and our scheme into Gemini with the prompt onscreen.</p>
 <p>But since there was no explicit label for “who” the comment targeted, we introduced an interpretive layer. We assumed that if a comment is positive or neutral, it likely supports the OP; if it’s negative or neutral-negative, it’s likely criticizing someone else.</p>
 <p>This mapping let us create a supervised task where we could evaluate how well language models inferred that directionality of sentiment — toward OP or another party.</p>
 <style type="text/css">
@@ -540,6 +554,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <li><strong>Confusion Matrix</strong></li>
 <li><strong>Precision, Recall, F1-Score</strong></li>
 <li><strong>Chi-Square Test</strong> to assess if the two models differ significantly in behavior</li>
+<li><strong>LDA Model</strong></li>
 </ul></li>
 </ul></li>
 <li><strong>Tools:</strong>
@@ -549,7 +564,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 </ul></li>
 </ul>
 <aside class="notes">
-<p>Now let’s get into our modeling setup.</p>
+<p>Charles+ William Now let’s get into our modeling setup.</p>
 <p>We framed the task as binary classification: each Reddit comment either targets the OP or someone else. It’s simple but lets us explore how models process moral and interpersonal cues.</p>
 <p>We used two tools: - Gemini, accessed via Google’s API, where we gave it a strict prompt and recorded whether it said “OP” or “Other.” - BERT, a widely used pretrained model, which we ran using the Hugging Face pipeline. We truncated inputs at 512 tokens to meet the model’s length limit.</p>
 <p>Both models returned predictions, which we compared to our mapped labels. We calculated standard performance metrics: accuracy, precision, recall, and F1-score.</p>
@@ -624,7 +639,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 </ul></li>
 </ul>
 <aside class="notes">
-<p>This slide shows the statistical backbone of our model comparison.</p>
+<p>Daisy+ Willaim This slide shows the statistical backbone of our model comparison.</p>
 <p>The chi-square test checks whether Gemini and BERT make different types of mistakes. For example, are they both bad at identifying criticism of “Other” people? Or does one model tend to overclassify everything as OP?</p>
 <p>We built a 2x2x2 contingency table with prediction outcomes from both models: - True OP → predicted OP - True OP → predicted Other - True Other → predicted OP - True Other → predicted Other</p>
 <p>The results show a chi-square value of 37.93 and a p-value well below 0.000001. This means the differences between models are <strong>highly statistically significant</strong> — they don’t behave the same, and those differences aren’t random.</p>
@@ -644,7 +659,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <section id="results" class="slide level2 scrollable smaller">
 <h2>Results</h2>
 <div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Gemini Performance</a></li><li><a href="#tabset-2-2">BERT Performance</a></li><li><a href="#tabset-2-3">Comparison: Chi-Square Test</a></li><li><a href="#tabset-2-4">Confusion Matrix Heatmaps</a></li><li><a href="#tabset-2-5">LDA Topic Exploration</a></li></ul>
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Gemini Performance</a></li><li><a href="#tabset-2-2">BERT Performance</a></li><li><a href="#tabset-2-3">Comparison: Chi-Square Test</a></li><li><a href="#tabset-2-4">Confusion Matrix Heatmaps</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1">
 <ul>
@@ -710,148 +725,10 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <li>This visual shows how both models skew toward OP classification</li>
 </ul>
 </div>
-<div id="tabset-2-5">
-<p>Baseline (5 Topics, with stop-words)</p>
-<p>Dominated by common function words (you, the, to, and).</p>
-<p>No meaningful topics emerged.</p>
-<p>5-Topic Model (stop-words removed)</p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 12%">
-<col style="width: 50%">
-<col style="width: 37%">
-</colgroup>
-<thead>
-<tr class="header">
-<th><strong>Topic</strong></th>
-<th><strong>Top Keywords</strong></th>
-<th><strong>Interpretation</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>wife, child, daughter, son, parents</td>
-<td>Parenting / Kids</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>money, house, job, pay</td>
-<td>Finances &amp; Housing</td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>family, husband, wife, mother, food</td>
-<td>OP vs Spouse &amp; In-laws</td>
-</tr>
-<tr class="even">
-<td>4</td>
-<td>sorry, better, want, life, good</td>
-<td>Self-improvement / Apology</td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td>brother, sister, parents, wedding</td>
-<td>Siblings &amp; Weddings</td>
-</tr>
-</tbody>
-</table>
-<p>10-Topic Model (stop words removed)</p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 11%">
-<col style="width: 40%">
-<col style="width: 47%">
-</colgroup>
-<thead>
-<tr class="header">
-<th><strong>Topic</strong></th>
-<th><strong>Top Keywords</strong></th>
-<th><strong>Interpretation</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>wife, daughter, dad, discipline</td>
-<td>Parental favoritism / Discipline</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>money, job, kids, cost-sharing</td>
-<td>Financial Responsibility</td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>mom, wedding, pay, funding</td>
-<td>Event Payments &amp; Parental Funding</td>
-</tr>
-<tr class="even">
-<td>4</td>
-<td>better, life, relationship</td>
-<td>Self-improvement &amp; Leaving Toxicity</td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td>brother, parents, fairness</td>
-<td>Sibling Fairness &amp; Childcare Burdens</td>
-</tr>
-<tr class="even">
-<td>6</td>
-<td>divorce, custody, awards</td>
-<td>Updates &amp; Legal Family Issues</td>
-</tr>
-<tr class="odd">
-<td>7</td>
-<td>friend, happy, asshole</td>
-<td>Friendship &amp; Social Conflicts</td>
-</tr>
-<tr class="even">
-<td>8</td>
-<td>right, eat, son, dietary</td>
-<td>Dietary &amp; Health Disputes</td>
-</tr>
-<tr class="odd">
-<td>9</td>
-<td>support, legal, financial</td>
-<td>Legal Advice &amp; Financial Contracts</td>
-</tr>
-<tr class="even">
-<td>10</td>
-<td>sister, wedding, dress, kids</td>
-<td>Wedding Attire &amp; Child-free Weddings</td>
-</tr>
-</tbody>
-</table>
-<aside class="notes">
-<p>nitially, we tested a baseline model using 5 topics with all words included—but this mainly captured common grammar words, providing no useful insights.</p>
-<p>After removing stop-words (common English words that don’t convey specific meaning), clear and meaningful topics emerged.</p>
-<p>A 5-topic LDA model revealed broad, easily recognizable themes common in AITA discussions:</p>
-<p>Parenting and childcare disputes</p>
-<p>Financial issues, including rent or inheritance disagreements</p>
-<p>Spousal conflicts, particularly involving domestic boundaries and in-laws</p>
-<p>Personal growth, apologies, and self-improvement narratives</p>
-<p>Sibling rivalries and wedding-related arguments</p>
-<p>Expanding to a 10-topic LDA model allowed us to capture more detailed nuances within each broad theme, highlighting specific situations:</p>
-<p>For example, financial issues separated into topics such as job-related money arguments and parental financial support for events.</p>
-<p>Family-related conflicts became more nuanced, distinguishing between sibling fairness and parental favoritism.</p>
-<p>These identified topics align closely with real-world moral conflicts frequently observed on the AITA subreddit, giving strong face validity to our data and supporting our overall analysis.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</div>
 </div>
 </div>
 <aside class="notes">
-<p>Let’s break down what we found.</p>
+<p>Charles + Daisy Let’s break down what we found.</p>
 <p><strong>Gemini</strong> performed better overall. It correctly predicted OP criticism more often and had a higher F1-score for both classes. Its accuracy was 84%, and it handled “Other” targets better than BERT did — though even Gemini struggled with minority class predictions.</p>
 <p><strong>BERT</strong> lagged behind with a 72% accuracy. It was especially weak at catching “Other” criticism — that is, when someone in the post other than the OP was being judged.</p>
 <p>This suggests BERT has trouble with context and social nuance. It’s likely treating all comments as if they’re about the main poster.</p>
@@ -934,7 +811,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 </div>
 </div>
 <aside class="notes">
-<p>To conclude: both models can <em>approximate</em> moral judgment in AITA posts, but they do it differently.</p>
+<p>William (Conclusion ), Charles (Limitation), Daisy ( Future Direction) To conclude: both models can <em>approximate</em> moral judgment in AITA posts, but they do it differently.</p>
 <p>Gemini outperformed BERT, especially in identifying when the OP <em>wasn’t</em> the target. That matters — because understanding misfires or conflict direction is central to interpreting social media judgment.</p>
 <p>However, we should be cautious: - Our labels were inferred from sentiment, not explicitly labeled as “OP” or “Other.” - BERT wasn’t fine-tuned for AITA — we used it off the shelf, which limits accuracy. - Some responses were too long and had to be truncated, which may have dropped important context.</p>
 <p>Moving forward, we’d want to: - Fine-tune models on AITA-style data - Collect more granular labels - Incorporate relational or discourse-level features to improve context sensitivity</p>
@@ -1209,7 +1086,18 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
         }
         return false;
       }
-      const onCopySuccess = function(e) {
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        text: function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+      });
+      clipboard.on('success', function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1241,29 +1129,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
         }, 1000);
         // clear code selection
         e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
       });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        // For code content inside modals, clipBoardJS needs to be initialized with a container option
-        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -1271,7 +1137,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {

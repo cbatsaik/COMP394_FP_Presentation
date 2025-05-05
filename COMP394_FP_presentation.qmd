@@ -42,45 +42,6 @@ Our dataset is from Hugging Face and includes 900+ posts and labeled comments. W
 To test this, we compare two tools: Gemini (a large language model via API) and BERT (a popular open-source NLP model). This sets the stage for analyzing how each interprets tone and direction of criticism.
 :::
 
-## Methods Overview {.scrollable .smaller}
-
--   **Goal:** Determine whether AITA comment sentiment is directed at the Original Poster (OP) or someone else.
--   **Step 1: Data Mapping**
-    -   Used 5 original sentiment labels: *positive, negative, neutral, neutral (positive), neutral (negative)*.
-    -   Mapped to two categories:
-        -   **OP** = Positive, Neutral (Positive), Neutral
-        -   **Other** = Negative, Neutral (Negative)
--   **Step 2: Gemini Predictions**
-    -   Prompted Gemini to classify each response: *"Is this criticizing the OP or someone else?"*
-    -   Saved Gemini's binary prediction: "OP" or "Other"
--   **Step 3: BERT Model**
-    -   Used `bert-base-uncased` in a text classification pipeline
-    -   Ran responses through BERT with truncation at 512 tokens
-    -   Saved predicted labels: "OP" or "Other"
-- **Unsupervised Topic Check (LDA)**
-  - Ran two LDA setups:
-    1. 5‑topic model *with* stop‑words (baseline sanity‑check)  
-    2. 5‑ and 10‑topic models *without* stop‑words (meaningful themes)
--   **Step 4: Evaluation**
-    -   Compared both models to mapped sentiment labels using:
-        -   Confusion matrices
-        -   Precision, recall, F1-score
-        -   Chi-square test to compare prediction distributions
-
-::: notes
-Charles
-Here’s how we structured our approach.
-
-First, we mapped all sentiment labels into binary classes. Positive, neutral-positive, and neutral were assumed to refer to the OP — since those sentiments tend to be supportive or neutral toward the main poster. Negative and neutral-negative were mapped to “Other,” assuming criticism was directed elsewhere.
-
-Then we ran two models:
-
--   Gemini was prompted using clear instructions to classify whether a comment criticizes the OP or not.
--   BERT was used as a pretrained model for binary classification. It doesn’t understand Reddit rules out of the box, so it’s more of a baseline.
-
-Finally, we evaluated model predictions against our mapped labels using confusion matrices and classification metrics. To check for statistical significance between model behaviors, we used a chi-square test.
-:::
-
 ## Data Collection and Annotation {.scrollable .smaller}
 
 -   **Source:**
@@ -131,6 +92,47 @@ But since there was no explicit label for “who” the comment targeted, we int
 
 This mapping let us create a supervised task where we could evaluate how well language models inferred that directionality of sentiment — toward OP or another party.
 :::
+
+
+## Methods Overview {.scrollable .smaller}
+
+-   **Goal:** Determine whether AITA comment sentiment is directed at the Original Poster (OP) or someone else.
+-   **Step 1: Data Mapping**
+    -   Used 5 sentiment labels: *positive, negative, neutral, neutral (positive), neutral (negative)*.
+    -   Mapped to two categories:
+        -   **OP** = Positive, Neutral (Positive), Neutral
+        -   **Other** = Negative, Neutral (Negative)
+-   **Step 2: Gemini Predictions**
+    -   Prompted Gemini to classify each response: *"Is this criticizing the OP or someone else?"*
+    -   Saved Gemini's binary prediction: "OP" or "Other"
+-   **Step 3: BERT Model**
+    -   Used `bert-base-uncased` in a text classification pipeline
+    -   Ran responses through BERT with truncation at 512 tokens
+    -   Saved predicted labels: "OP" or "Other"
+- **Unsupervised Topic Check (LDA)**
+  - Ran two LDA setups:
+    1. 5‑topic model *with* stop‑words (baseline sanity‑check)  
+    2. 5‑ and 10‑topic models *without* stop‑words (meaningful themes)
+-   **Step 4: Evaluation**
+    -   Compared both models to mapped sentiment labels using:
+        -   Confusion matrices
+        -   Precision, recall, F1-score
+        -   Chi-square test to compare prediction distributions
+
+::: notes
+Charles
+Here’s how we structured our approach.
+
+First, we mapped all sentiment labels into binary classes. Positive, neutral-positive, and neutral were assumed to refer to the OP — since those sentiments tend to be supportive or neutral toward the main poster. Negative and neutral-negative were mapped to “Other,” assuming criticism was directed elsewhere.
+
+Then we ran two models:
+
+-   Gemini was prompted using clear instructions to classify whether a comment criticizes the OP or not.
+-   BERT was used as a pretrained model for binary classification. It doesn’t understand Reddit rules out of the box, so it’s more of a baseline.
+
+Finally, we evaluated model predictions against our mapped labels using confusion matrices and classification metrics. To check for statistical significance between model behaviors, we used a chi-square test.
+:::
+
 
 ## Analysis Methods {.scrollable .smaller}
 
