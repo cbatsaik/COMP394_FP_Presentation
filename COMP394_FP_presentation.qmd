@@ -356,7 +356,6 @@ Together, these results show that even among advanced language models, some are 
     -   Explore additional linguistic features and context to enhance model predictions.
 :::
 
-<<<<<<< HEAD
 ::: {.notes}
 To conclude: both models can *approximate* moral judgment in AITA posts, but they do it differently.
 
@@ -378,8 +377,6 @@ The takeaway? Model choice matters — and understanding how models “read” j
 ## Questions? 
 =======
 ## Questions?
-
->>>>>>> 9876fb97425ea7bf212531affe245b44aade06d2
 ## Thanks !!
 
 ------------------------------------------------------------------------
