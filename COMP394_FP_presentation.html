@@ -393,70 +393,6 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
           display:block!important;
       }</style></aside>
 </section>
-<section id="methods-overview" class="slide level2 scrollable smaller">
-<h2>Methods Overview</h2>
-<ul>
-<li><strong>Goal:</strong> Determine whether AITA comment sentiment is directed at the Original Poster (OP) or someone else.</li>
-<li><strong>Step 1: Data Mapping</strong>
-<ul>
-<li>Used 5 original sentiment labels: <em>positive, negative, neutral, neutral (positive), neutral (negative)</em>.</li>
-<li>Mapped to two categories:
-<ul>
-<li><strong>OP</strong> = Positive, Neutral (Positive), Neutral</li>
-<li><strong>Other</strong> = Negative, Neutral (Negative)</li>
-</ul></li>
-</ul></li>
-<li><strong>Step 2: Gemini Predictions</strong>
-<ul>
-<li>Prompted Gemini to classify each response: <em>“Is this criticizing the OP or someone else?”</em></li>
-<li>Saved Gemini’s binary prediction: “OP” or “Other”</li>
-</ul></li>
-<li><strong>Step 3: BERT Model</strong>
-<ul>
-<li>Used <code>bert-base-uncased</code> in a text classification pipeline</li>
-<li>Ran responses through BERT with truncation at 512 tokens</li>
-<li>Saved predicted labels: “OP” or “Other”</li>
-</ul></li>
-<li><strong>Unsupervised Topic Check (LDA)</strong>
-<ul>
-<li>Ran two LDA setups:
-<ol type="1">
-<li>5‑topic model <em>with</em> stop‑words (baseline sanity‑check)<br>
-</li>
-<li>5‑ and 10‑topic models <em>without</em> stop‑words (meaningful themes)</li>
-</ol></li>
-</ul></li>
-<li><strong>Step 4: Evaluation</strong>
-<ul>
-<li>Compared both models to mapped sentiment labels using:
-<ul>
-<li>Confusion matrices</li>
-<li>Precision, recall, F1-score</li>
-<li>Chi-square test to compare prediction distributions</li>
-</ul></li>
-</ul></li>
-</ul>
-<aside class="notes">
-<p>Charles Here’s how we structured our approach.</p>
-<p>First, we mapped all sentiment labels into binary classes. Positive, neutral-positive, and neutral were assumed to refer to the OP — since those sentiments tend to be supportive or neutral toward the main poster. Negative and neutral-negative were mapped to “Other,” assuming criticism was directed elsewhere.</p>
-<p>Then we ran two models:</p>
-<ul>
-<li>Gemini was prompted using clear instructions to classify whether a comment criticizes the OP or not.</li>
-<li>BERT was used as a pretrained model for binary classification. It doesn’t understand Reddit rules out of the box, so it’s more of a baseline.</li>
-</ul>
-<p>Finally, we evaluated model predictions against our mapped labels using confusion matrices and classification metrics. To check for statistical significance between model behaviors, we used a chi-square test.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
 <section id="data-collection-and-annotation" class="slide level2 scrollable smaller">
 <h2>Data Collection and Annotation</h2>
 <ul>
@@ -510,6 +446,70 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <p>Using this scheme, we each hand-annotated 50 entries of responses each, cumulating to 150 labelled responses. For the remaining 750+ entries, we input them and our scheme into Gemini with the prompt onscreen.</p>
 <p>But since there was no explicit label for “who” the comment targeted, we introduced an interpretive layer. We assumed that if a comment is positive or neutral, it likely supports the OP; if it’s negative or neutral-negative, it’s likely criticizing someone else.</p>
 <p>This mapping let us create a supervised task where we could evaluate how well language models inferred that directionality of sentiment — toward OP or another party.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="methods-overview" class="slide level2 scrollable smaller">
+<h2>Methods Overview</h2>
+<ul>
+<li><strong>Goal:</strong> Determine whether AITA comment sentiment is directed at the Original Poster (OP) or someone else.</li>
+<li><strong>Step 1: Data Mapping</strong>
+<ul>
+<li>Used 5 sentiment labels: <em>positive, negative, neutral, neutral (positive), neutral (negative)</em>.</li>
+<li>Mapped to two categories:
+<ul>
+<li><strong>OP</strong> = Positive, Neutral (Positive), Neutral</li>
+<li><strong>Other</strong> = Negative, Neutral (Negative)</li>
+</ul></li>
+</ul></li>
+<li><strong>Step 2: Gemini Predictions</strong>
+<ul>
+<li>Prompted Gemini to classify each response: <em>“Is this criticizing the OP or someone else?”</em></li>
+<li>Saved Gemini’s binary prediction: “OP” or “Other”</li>
+</ul></li>
+<li><strong>Step 3: BERT Model</strong>
+<ul>
+<li>Used <code>bert-base-uncased</code> in a text classification pipeline</li>
+<li>Ran responses through BERT with truncation at 512 tokens</li>
+<li>Saved predicted labels: “OP” or “Other”</li>
+</ul></li>
+<li><strong>Unsupervised Topic Check (LDA)</strong>
+<ul>
+<li>Ran two LDA setups:
+<ol type="1">
+<li>5‑topic model <em>with</em> stop‑words (baseline sanity‑check)<br>
+</li>
+<li>5‑ and 10‑topic models <em>without</em> stop‑words (meaningful themes)</li>
+</ol></li>
+</ul></li>
+<li><strong>Step 4: Evaluation</strong>
+<ul>
+<li>Compared both models to mapped sentiment labels using:
+<ul>
+<li>Confusion matrices</li>
+<li>Precision, recall, F1-score</li>
+<li>Chi-square test to compare prediction distributions</li>
+</ul></li>
+</ul></li>
+</ul>
+<aside class="notes">
+<p>Charles Here’s how we structured our approach.</p>
+<p>First, we mapped all sentiment labels into binary classes. Positive, neutral-positive, and neutral were assumed to refer to the OP — since those sentiments tend to be supportive or neutral toward the main poster. Negative and neutral-negative were mapped to “Other,” assuming criticism was directed elsewhere.</p>
+<p>Then we ran two models:</p>
+<ul>
+<li>Gemini was prompted using clear instructions to classify whether a comment criticizes the OP or not.</li>
+<li>BERT was used as a pretrained model for binary classification. It doesn’t understand Reddit rules out of the box, so it’s more of a baseline.</li>
+</ul>
+<p>Finally, we evaluated model predictions against our mapped labels using confusion matrices and classification metrics. To check for statistical significance between model behaviors, we used a chi-square test.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -589,6 +589,189 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <li>To check if Gemini and BERT make significantly different types of predictions</li>
 <li>Compares how each model distributes errors (e.g., false positives, false negatives)</li>
 </ul></li>
+</ul>
+<aside class="notes">
+<p>Daisy+ Willaim This slide shows the statistical backbone of our model comparison.</p>
+<p>The chi-square test checks whether Gemini and BERT make different types of mistakes. For example, are they both bad at identifying criticism of “Other” people? Or does one model tend to overclassify everything as OP?</p>
+<p>We built a 2x2x2 contingency table with prediction outcomes from both models: - True OP → predicted OP - True OP → predicted Other - True Other → predicted OP - True Other → predicted Other</p>
+<p>The results show a chi-square value of 37.93 and a p-value well below 0.000001. This means the differences between models are <strong>highly statistically significant</strong> — they don’t behave the same, and those differences aren’t random.</p>
+<p>This test gives us solid evidence that Gemini and BERT interpret moral judgment in different ways.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="results" class="slide level2 scrollable smaller">
+<h2>Results</h2>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Gemini Performance</a></li><li><a href="#tabset-2-2">BERT Performance</a></li><li><a href="#tabset-2-3">LDA Topic Exploration</a></li><li><a href="#tabset-2-4">Comparison: Chi-Square Test</a></li><li><a href="#tabset-2-5">Confusion Matrix Heatmaps</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<ul>
+<li><strong>Confusion Matrix:</strong>
+<ul>
+<li>True OP → OP: 714<br>
+</li>
+<li>True OP → Other: 97<br>
+</li>
+<li>True Other → OP: 47<br>
+</li>
+<li>True Other → Other: 24</li>
+</ul></li>
+<li><strong>Metrics:</strong>
+<ul>
+<li>Accuracy: <strong>84%</strong></li>
+<li>OP F1-score: <strong>0.91</strong></li>
+<li>Other F1-score: <strong>0.25</strong></li>
+<li>Model tends to <strong>favor OP classification</strong>, underperforms on “Other”</li>
+</ul></li>
+</ul>
+</div>
+<div id="tabset-2-2">
+<ul>
+<li><strong>Confusion Matrix:</strong>
+<ul>
+<li>True OP → OP: 666<br>
+</li>
+<li>True OP → Other: 201<br>
+</li>
+<li>True Other → OP: 60<br>
+</li>
+<li>True Other → Other: 19</li>
+</ul></li>
+<li><strong>Metrics:</strong>
+<ul>
+<li>Accuracy: <strong>72%</strong></li>
+<li>OP F1-score: <strong>0.84</strong></li>
+<li>Other F1-score: <strong>0.13</strong></li>
+<li>Weaker than Gemini overall, especially on minority class (“Other”)</li>
+</ul></li>
+</ul>
+</div>
+<div id="tabset-2-3">
+<p>Baseline (5 Topics, with stop-words)</p>
+<p>Dominated by common function words (you, the, to, and).</p>
+<p>No meaningful topics emerged.</p>
+<p>5-Topic Model (stop-words removed)</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 50%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Topic</strong></th>
+<th><strong>Top Keywords</strong></th>
+<th><strong>Interpretation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>wife, child, daughter, son, parents</td>
+<td>Parenting / Kids</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>money, house, job, pay</td>
+<td>Finances &amp; Housing</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>family, husband, wife, mother, food</td>
+<td>OP vs Spouse &amp; In-laws</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>sorry, better, want, life, good</td>
+<td>Self-improvement / Apology</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>brother, sister, parents, wedding</td>
+<td>Siblings &amp; Weddings</td>
+</tr>
+</tbody>
+</table>
+<p>10-Topic Model (stop words removed)</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 40%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Topic</strong></th>
+<th><strong>Top Keywords</strong></th>
+<th><strong>Interpretation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>wife, daughter, dad, discipline</td>
+<td>Parental favoritism / Discipline</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>money, job, kids, cost-sharing</td>
+<td>Financial Responsibility</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>mom, wedding, pay, funding</td>
+<td>Event Payments &amp; Parental Funding</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>better, life, relationship</td>
+<td>Self-improvement &amp; Leaving Toxicity</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>brother, parents, fairness</td>
+<td>Sibling Fairness &amp; Childcare Burdens</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>divorce, custody, awards</td>
+<td>Updates &amp; Legal Family Issues</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>friend, happy, asshole</td>
+<td>Friendship &amp; Social Conflicts</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>right, eat, son, dietary</td>
+<td>Dietary &amp; Health Disputes</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>support, legal, financial</td>
+<td>Legal Advice &amp; Financial Contracts</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>sister, wedding, dress, kids</td>
+<td>Wedding Attire &amp; Child-free Weddings</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="tabset-2-4">
+<ul>
+<li><p><strong>Statistical Test:</strong> χ² = 37.93, p &lt; 0.00000003</p></li>
 <li><p><strong>Contingency Table Input:</strong></p>
 <table class="caption-top">
 <colgroup>
@@ -637,80 +820,11 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <li>Strong evidence that BERT and Gemini behave differently</li>
 <li>Supports our argument that model choice matters in moral sentiment analysis</li>
 </ul></li>
-</ul>
-<aside class="notes">
-<p>Daisy+ Willaim This slide shows the statistical backbone of our model comparison.</p>
-<p>The chi-square test checks whether Gemini and BERT make different types of mistakes. For example, are they both bad at identifying criticism of “Other” people? Or does one model tend to overclassify everything as OP?</p>
-<p>We built a 2x2x2 contingency table with prediction outcomes from both models: - True OP → predicted OP - True OP → predicted Other - True Other → predicted OP - True Other → predicted Other</p>
-<p>The results show a chi-square value of 37.93 and a p-value well below 0.000001. This means the differences between models are <strong>highly statistically significant</strong> — they don’t behave the same, and those differences aren’t random.</p>
-<p>This test gives us solid evidence that Gemini and BERT interpret moral judgment in different ways.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="results" class="slide level2 scrollable smaller">
-<h2>Results</h2>
-<div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Gemini Performance</a></li><li><a href="#tabset-2-2">BERT Performance</a></li><li><a href="#tabset-2-3">Comparison: Chi-Square Test</a></li><li><a href="#tabset-2-4">Confusion Matrix Heatmaps</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1">
-<ul>
-<li><strong>Confusion Matrix:</strong>
-<ul>
-<li>True OP → OP: 714<br>
-</li>
-<li>True OP → Other: 97<br>
-</li>
-<li>True Other → OP: 47<br>
-</li>
-<li>True Other → Other: 24</li>
-</ul></li>
-<li><strong>Metrics:</strong>
-<ul>
-<li>Accuracy: <strong>84%</strong></li>
-<li>OP F1-score: <strong>0.91</strong></li>
-<li>Other F1-score: <strong>0.25</strong></li>
-<li>Model tends to <strong>favor OP classification</strong>, underperforms on “Other”</li>
-</ul></li>
+<li><p><strong>Interpretation:</strong> Gemini and BERT <strong>distribute predictions significantly differently</strong></p></li>
+<li><p><strong>Implication:</strong> Model choice affects who we think is being criticized in AITA — not all LLMs “read” judgment the same way</p></li>
 </ul>
 </div>
-<div id="tabset-2-2">
-<ul>
-<li><strong>Confusion Matrix:</strong>
-<ul>
-<li>True OP → OP: 666<br>
-</li>
-<li>True OP → Other: 201<br>
-</li>
-<li>True Other → OP: 60<br>
-</li>
-<li>True Other → Other: 19</li>
-</ul></li>
-<li><strong>Metrics:</strong>
-<ul>
-<li>Accuracy: <strong>72%</strong></li>
-<li>OP F1-score: <strong>0.84</strong></li>
-<li>Other F1-score: <strong>0.13</strong></li>
-<li>Weaker than Gemini overall, especially on minority class (“Other”)</li>
-</ul></li>
-</ul>
-</div>
-<div id="tabset-2-3">
-<ul>
-<li><strong>Statistical Test:</strong> χ² = 37.93, p &lt; 0.00000003</li>
-<li><strong>Interpretation:</strong> Gemini and BERT <strong>distribute predictions significantly differently</strong></li>
-<li><strong>Implication:</strong> Model choice affects who we think is being criticized in AITA — not all LLMs “read” judgment the same way</li>
-</ul>
-</div>
-<div id="tabset-2-4">
+<div id="tabset-2-5">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="heatmap.png"></p>

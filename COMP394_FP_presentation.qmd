@@ -180,23 +180,6 @@ Then, we used a chi-square test to ask: do Gemini and BERT differ meaningfully i
     -   To check if Gemini and BERT make significantly different types of predictions
     -   Compares how each model distributes errors (e.g., false positives, false negatives)
 
--   **Contingency Table Input:**
-
-    | Model  | True OP → OP | True OP → Other | True Other → OP | True Other → Other |
-    |--------|--------------|-----------------|-----------------|--------------------|
-    | Gemini | 714          | 97              | 47              | 24                 |
-    | BERT   | 666          | 201             | 60              | 19                 |
-
--   **Results:**
-
-    -   Chi² = 37.93\
-    -   p-value = 2.92 × 10⁻⁸\
-    -   DoF = 3
-
--   **Interpretation:**
-
-    -   Strong evidence that BERT and Gemini behave differently
-    -   Supports our argument that model choice matters in moral sentiment analysis
 
 ::: notes
 Daisy+ Willaim
@@ -239,10 +222,64 @@ This test gives us solid evidence that Gemini and BERT interpret moral judgment 
     -   OP F1-score: **0.84**
     -   Other F1-score: **0.13**
     -   Weaker than Gemini overall, especially on minority class ("Other")
+    
+### LDA Topic Exploration
+
+
+Baseline (5 Topics, with stop-words)
+
+Dominated by common function words (you, the, to, and).
+
+No meaningful topics emerged.
+
+
+5-Topic Model (stop-words removed)
+
+
+| **Topic** | **Top Keywords**                    | **Interpretation**         |
+| --------- | ----------------------------------- | -------------------------- |
+| 1         | wife, child, daughter, son, parents | Parenting / Kids           |
+| 2         | money, house, job, pay              | Finances & Housing         |
+| 3         | family, husband, wife, mother, food | OP vs Spouse & In-laws     |
+| 4         | sorry, better, want, life, good     | Self-improvement / Apology |
+| 5         | brother, sister, parents, wedding   | Siblings & Weddings        |
+
+10-Topic Model (stop words removed)
+
+
+| **Topic** | **Top Keywords**                | **Interpretation**                   |
+| --------- | ------------------------------- | ------------------------------------ |
+| 1         | wife, daughter, dad, discipline | Parental favoritism / Discipline     |
+| 2         | money, job, kids, cost-sharing  | Financial Responsibility             |
+| 3         | mom, wedding, pay, funding      | Event Payments & Parental Funding    |
+| 4         | better, life, relationship      | Self-improvement & Leaving Toxicity  |
+| 5         | brother, parents, fairness      | Sibling Fairness & Childcare Burdens |
+| 6         | divorce, custody, awards        | Updates & Legal Family Issues        |
+| 7         | friend, happy, asshole          | Friendship & Social Conflicts        |
+| 8         | right, eat, son, dietary        | Dietary & Health Disputes            |
+| 9         | support, legal, financial       | Legal Advice & Financial Contracts   |
+| 10        | sister, wedding, dress, kids    | Wedding Attire & Child-free Weddings |
 
 ### Comparison: Chi-Square Test
 
 -   **Statistical Test:** χ² = 37.93, p \< 0.00000003
+-   **Contingency Table Input:**
+
+    | Model  | True OP → OP | True OP → Other | True Other → OP | True Other → Other |
+    |--------|--------------|-----------------|-----------------|--------------------|
+    | Gemini | 714          | 97              | 47              | 24                 |
+    | BERT   | 666          | 201             | 60              | 19                 |
+
+-   **Results:**
+
+    -   Chi² = 37.93\
+    -   p-value = 2.92 × 10⁻⁸\
+    -   DoF = 3
+
+-   **Interpretation:**
+
+    -   Strong evidence that BERT and Gemini behave differently
+    -   Supports our argument that model choice matters in moral sentiment analysis
 -   **Interpretation:** Gemini and BERT **distribute predictions significantly differently**
 -   **Implication:** Model choice affects who we think is being criticized in AITA — not all LLMs “read” judgment the same way
 
