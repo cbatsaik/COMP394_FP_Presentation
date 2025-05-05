@@ -30,7 +30,7 @@ editor: visual
     -   Gemini
 :::
 
-::: {.notes}
+::: notes
 We’re diving into r/AmITheAsshole, a subreddit where people post real‑life dilemmas and get judged by strangers. Each comment carries a clear verdict—you’re the jerk (YTA), you’re not (NTA), or one of two middle‑ground options. That makes AITA a gold‑mine for studying moral judgment online.
 
 Why should we care? Because these verdicts don’t stay on Reddit. They end up in news stories, TikToks, and sometimes real‑world backlash—so understanding how people reach them is important.
@@ -60,20 +60,19 @@ To test this, we compare two tools: Gemini (a large language model via API) and 
         -   Confusion matrices
         -   Precision, recall, F1-score
         -   Chi-square test to compare prediction distributions
-      
-::: {.notes}
+
+::: notes
 Here’s how we structured our approach.
 
 First, we mapped all sentiment labels into binary classes. Positive, neutral-positive, and neutral were assumed to refer to the OP — since those sentiments tend to be supportive or neutral toward the main poster. Negative and neutral-negative were mapped to “Other,” assuming criticism was directed elsewhere.
 
 Then we ran two models:
 
-- Gemini was prompted using clear instructions to classify whether a comment criticizes the OP or not.
-- BERT was used as a pretrained model for binary classification. It doesn’t understand Reddit rules out of the box, so it’s more of a baseline.
+-   Gemini was prompted using clear instructions to classify whether a comment criticizes the OP or not.
+-   BERT was used as a pretrained model for binary classification. It doesn’t understand Reddit rules out of the box, so it’s more of a baseline.
 
 Finally, we evaluated model predictions against our mapped labels using confusion matrices and classification metrics. To check for statistical significance between model behaviors, we used a chi-square test.
 :::
-
 
 ## Data Collection and Annotation {.scrollable .smaller}
 
@@ -85,8 +84,24 @@ Finally, we evaluated model predictions against our mapped labels using confusio
     -   Over 900+ comments total
     -   Focused on a subset of responses that had been sentiment-labeled
 -   **Annotation Strategy:**
-    -   Dataset included human-assigned sentiment labels:
+    -   Constructed a rubric of sentiment on a Positive-Negative scale
         -   *Positive, Negative, Neutral (positive), Neutral (negative), Neutral*
+    -   Execution: We each annotated 50 responses by hand (150 total), and submitted the remaining 750+ entries to Gemini with our predefined labels to finish annotation process
+        -   Prompt used:
+
+            "Given the following Reddit comment from the r/AmITheAsshole subreddit, classify its sentiment based on the following rubric:
+
+            -   **Positive**: Clearly supportive, kind, or affirming tone.
+
+                **Negative**: Clearly critical, hostile, or harsh in tone.
+
+                **Neutral (positive)**: Neutral in content, but leans slightly supportive or understanding.
+
+                **Neutral (negative)**: Neutral in content, but leans slightly critical or disapproving.
+
+                **Neutral**: Fully neutral in tone and content
+
+            Classify the sentiment of the comment accordingly and return only the label."
     -   We mapped these into binary classes for target inference:
         -   **OP** = Positive, Neutral (positive), Neutral
         -   **Other** = Negative, Neutral (negative)
@@ -95,19 +110,19 @@ Finally, we evaluated model predictions against our mapped labels using confusio
     -   Create a “ground truth” for training/evaluating language models
     -   Labels do not directly say “OP” or “Other,” so this mapping is our interpretive layer
 
-::: {.notes}
+::: notes
 Let’s talk about our data.
 
 We used the r/AmITheAsshole dataset from Hugging Face, created by Oguzz07. It includes the post content, user comments, and final subreddit verdicts. Our focus was on the comments — specifically those that already had sentiment labels.
 
-These labels were manually assigned and include not just "positive" or "negative," but nuanced categories like “neutral (positive)” or “neutral (negative).” That granularity is great for analyzing tone.
+We created an annotation scheme for a scale of sentiment from positive to negative- including 5 levels within that scale. The nuanced categories like “neutral (positive)” or “neutral (negative).” That granularity is great for analyzing tone.
+
+Using this scheme, we each hand-annotated 50 entries of responses each, cumulating to 150 labelled responses. For the remaining 750+ entries, we input them and our scheme into Gemini with the prompt onscreen.
 
 But since there was no explicit label for “who” the comment targeted, we introduced an interpretive layer. We assumed that if a comment is positive or neutral, it likely supports the OP; if it’s negative or neutral-negative, it’s likely criticizing someone else.
 
 This mapping let us create a supervised task where we could evaluate how well language models inferred that directionality of sentiment — toward OP or another party.
 :::
-
-
 
 ## Analysis Methods {.scrollable .smaller}
 
@@ -134,21 +149,18 @@ This mapping let us create a supervised task where we could evaluate how well la
 -   **Tools:**
     -   Python (Pandas, Transformers, SciPy)
     -   Google Colab for experimentation
-    
-::: {.notes}
+
+::: notes
 Now let’s get into our modeling setup.
 
 We framed the task as binary classification: each Reddit comment either targets the OP or someone else. It’s simple but lets us explore how models process moral and interpersonal cues.
 
-We used two tools:
-- Gemini, accessed via Google’s API, where we gave it a strict prompt and recorded whether it said “OP” or “Other.”
-- BERT, a widely used pretrained model, which we ran using the Hugging Face pipeline. We truncated inputs at 512 tokens to meet the model’s length limit.
+We used two tools: - Gemini, accessed via Google’s API, where we gave it a strict prompt and recorded whether it said “OP” or “Other.” - BERT, a widely used pretrained model, which we ran using the Hugging Face pipeline. We truncated inputs at 512 tokens to meet the model’s length limit.
 
 Both models returned predictions, which we compared to our mapped labels. We calculated standard performance metrics: accuracy, precision, recall, and F1-score.
 
 Then, we used a chi-square test to ask: do Gemini and BERT differ meaningfully in how they distribute their predictions? That helps us assess if model choice changes what moral reading we get from a comment.
 :::
-
 
 ## Chi-Square Test {.scrollable}
 
@@ -174,23 +186,18 @@ Then, we used a chi-square test to ask: do Gemini and BERT differ meaningfully i
 
     -   Strong evidence that BERT and Gemini behave differently
     -   Supports our argument that model choice matters in moral sentiment analysis
-    
-::: {.notes}
+
+::: notes
 This slide shows the statistical backbone of our model comparison.
 
 The chi-square test checks whether Gemini and BERT make different types of mistakes. For example, are they both bad at identifying criticism of “Other” people? Or does one model tend to overclassify everything as OP?
 
-We built a 2x2x2 contingency table with prediction outcomes from both models:
-- True OP → predicted OP
-- True OP → predicted Other
-- True Other → predicted OP
-- True Other → predicted Other
+We built a 2x2x2 contingency table with prediction outcomes from both models: - True OP → predicted OP - True OP → predicted Other - True Other → predicted OP - True Other → predicted Other
 
 The results show a chi-square value of 37.93 and a p-value well below 0.000001. This means the differences between models are **highly statistically significant** — they don’t behave the same, and those differences aren’t random.
 
 This test gives us solid evidence that Gemini and BERT interpret moral judgment in different ways.
 :::
-    
 
 ## Results {.scrollable .smaller}
 
@@ -231,14 +238,12 @@ This test gives us solid evidence that Gemini and BERT interpret moral judgment 
 
 ![Confusion matrices for Gemini and BERT](heatmap.png)
 
-- **Gemini (left):** Stronger performance, especially for OP detection  
-- **BERT (right):** Weaker precision and recall on “Other” predictions  
-- This visual shows how both models skew toward OP classification
-
-
+-   **Gemini (left):** Stronger performance, especially for OP detection\
+-   **BERT (right):** Weaker precision and recall on “Other” predictions\
+-   This visual shows how both models skew toward OP classification
 :::
 
-::: {.notes}
+::: notes
 Let’s break down what we found.
 
 **Gemini** performed better overall. It correctly predicted OP criticism more often and had a higher F1-score for both classes. Its accuracy was 84%, and it handled “Other” targets better than BERT did — though even Gemini struggled with minority class predictions.
@@ -251,7 +256,6 @@ The heatmaps drive this home visually. Gemini’s predictions are more balanced;
 
 Together, these results show that even among advanced language models, some are better equipped to understand how people judge each other in online discourse.
 :::
-
 
 ## Conclusion and Limitations {.scrollable .smaller}
 
@@ -289,27 +293,20 @@ Together, these results show that even among advanced language models, some are 
     -   Explore additional linguistic features and context to enhance model predictions.
 :::
 
-::: {.notes}
+::: notes
 To conclude: both models can *approximate* moral judgment in AITA posts, but they do it differently.
 
 Gemini outperformed BERT, especially in identifying when the OP *wasn’t* the target. That matters — because understanding misfires or conflict direction is central to interpreting social media judgment.
 
-However, we should be cautious:
-- Our labels were inferred from sentiment, not explicitly labeled as “OP” or “Other.”
-- BERT wasn’t fine-tuned for AITA — we used it off the shelf, which limits accuracy.
-- Some responses were too long and had to be truncated, which may have dropped important context.
+However, we should be cautious: - Our labels were inferred from sentiment, not explicitly labeled as “OP” or “Other.” - BERT wasn’t fine-tuned for AITA — we used it off the shelf, which limits accuracy. - Some responses were too long and had to be truncated, which may have dropped important context.
 
-Moving forward, we’d want to:
-- Fine-tune models on AITA-style data
-- Collect more granular labels
-- Incorporate relational or discourse-level features to improve context sensitivity
+Moving forward, we’d want to: - Fine-tune models on AITA-style data - Collect more granular labels - Incorporate relational or discourse-level features to improve context sensitivity
 
 The takeaway? Model choice matters — and understanding how models “read” judgment is vital if we want to automate or analyze online discourse responsibly.
 :::
 
-## Questions? 
+## Questions?
+
 ## Thanks !!
-
-
 
 ------------------------------------------------------------------------
