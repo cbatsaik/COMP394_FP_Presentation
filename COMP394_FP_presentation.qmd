@@ -31,6 +31,8 @@ editor: visual
 :::
 
 ::: notes
+
+Daisy+ William
 We’re diving into r/AmITheAsshole, a subreddit where people post real‑life dilemmas and get judged by strangers. Each comment carries a clear verdict—you’re the jerk (YTA), you’re not (NTA), or one of two middle‑ground options. That makes AITA a gold‑mine for studying moral judgment online.
 
 Why should we care? Because these verdicts don’t stay on Reddit. They end up in news stories, TikToks, and sometimes real‑world backlash—so understanding how people reach them is important.
@@ -66,6 +68,7 @@ To test this, we compare two tools: Gemini (a large language model via API) and 
         -   Chi-square test to compare prediction distributions
 
 ::: notes
+Charles
 Here’s how we structured our approach.
 
 First, we mapped all sentiment labels into binary classes. Positive, neutral-positive, and neutral were assumed to refer to the OP — since those sentiments tend to be supportive or neutral toward the main poster. Negative and neutral-negative were mapped to “Other,” assuming criticism was directed elsewhere.
@@ -115,6 +118,7 @@ Finally, we evaluated model predictions against our mapped labels using confusio
     -   Labels do not directly say “OP” or “Other,” so this mapping is our interpretive layer
 
 ::: notes
+Daisy+ William
 Let’s talk about our data.
 
 We used the r/AmITheAsshole dataset from Hugging Face, created by Oguzz07. It includes the post content, user comments, and final subreddit verdicts. Our focus was on the comments — specifically those that already had sentiment labels.
@@ -155,6 +159,7 @@ This mapping let us create a supervised task where we could evaluate how well la
     -   Google Colab for experimentation
 
 ::: notes
+Charles+ William
 Now let’s get into our modeling setup.
 
 We framed the task as binary classification: each Reddit comment either targets the OP or someone else. It’s simple but lets us explore how models process moral and interpersonal cues.
@@ -192,6 +197,7 @@ Then, we used a chi-square test to ask: do Gemini and BERT differ meaningfully i
     -   Supports our argument that model choice matters in moral sentiment analysis
 
 ::: notes
+Daisy+ Willaim
 This slide shows the statistical backbone of our model comparison.
 
 The chi-square test checks whether Gemini and BERT make different types of mistakes. For example, are they both bad at identifying criticism of “Other” people? Or does one model tend to overclassify everything as OP?
@@ -248,6 +254,7 @@ This test gives us solid evidence that Gemini and BERT interpret moral judgment 
 :::
 
 ::: notes
+Charles + Daisy
 Let’s break down what we found.
 
 **Gemini** performed better overall. It correctly predicted OP criticism more often and had a higher F1-score for both classes. Its accuracy was 84%, and it handled “Other” targets better than BERT did — though even Gemini struggled with minority class predictions.
@@ -298,6 +305,7 @@ Together, these results show that even among advanced language models, some are 
 :::
 
 ::: notes
+William (Conclusion ), Charles (Limitation), Daisy ( Future Direction)
 To conclude: both models can *approximate* moral judgment in AITA posts, but they do it differently.
 
 Gemini outperformed BERT, especially in identifying when the OP *wasn’t* the target. That matters — because understanding misfires or conflict direction is central to interpreting social media judgment.
