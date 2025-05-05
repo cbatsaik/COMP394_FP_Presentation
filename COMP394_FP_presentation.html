@@ -8,7 +8,7 @@
 <link href="COMP394_FP_presentation_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="COMP394_FP_presentation_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="COMP394_FP_presentation_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.555">
+  <meta name="generator" content="quarto-1.5.57">
 
   <meta name="author" content="Charles Batsaikhan, William Acosta Lora, Daisy Chan">
   <title>COMP394 Project Presentation</title>
@@ -417,6 +417,15 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <li>Ran responses through BERT with truncation at 512 tokens</li>
 <li>Saved predicted labels: “OP” or “Other”</li>
 </ul></li>
+<li><strong>Unsupervised Topic Check (LDA)</strong>
+<ul>
+<li>Ran two LDA setups:
+<ol type="1">
+<li>5‑topic model <em>with</em> stop‑words (baseline sanity‑check)<br>
+</li>
+<li>5‑ and 10‑topic models <em>without</em> stop‑words (meaningful themes)</li>
+</ol></li>
+</ul></li>
 <li><strong>Step 4: Evaluation</strong>
 <ul>
 <li>Compared both models to mapped sentiment labels using:
@@ -635,7 +644,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 <section id="results" class="slide level2 scrollable smaller">
 <h2>Results</h2>
 <div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Gemini Performance</a></li><li><a href="#tabset-2-2">BERT Performance</a></li><li><a href="#tabset-2-3">Comparison: Chi-Square Test</a></li><li><a href="#tabset-2-4">Confusion Matrix Heatmaps</a></li></ul>
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Gemini Performance</a></li><li><a href="#tabset-2-2">BERT Performance</a></li><li><a href="#tabset-2-3">Comparison: Chi-Square Test</a></li><li><a href="#tabset-2-4">Confusion Matrix Heatmaps</a></li><li><a href="#tabset-2-5">LDA Topic Exploration</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1">
 <ul>
@@ -700,6 +709,144 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
 </li>
 <li>This visual shows how both models skew toward OP classification</li>
 </ul>
+</div>
+<div id="tabset-2-5">
+<p>Baseline (5 Topics, with stop-words)</p>
+<p>Dominated by common function words (you, the, to, and).</p>
+<p>No meaningful topics emerged.</p>
+<p>5-Topic Model (stop-words removed)</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 50%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Topic</strong></th>
+<th><strong>Top Keywords</strong></th>
+<th><strong>Interpretation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>wife, child, daughter, son, parents</td>
+<td>Parenting / Kids</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>money, house, job, pay</td>
+<td>Finances &amp; Housing</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>family, husband, wife, mother, food</td>
+<td>OP vs Spouse &amp; In-laws</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>sorry, better, want, life, good</td>
+<td>Self-improvement / Apology</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>brother, sister, parents, wedding</td>
+<td>Siblings &amp; Weddings</td>
+</tr>
+</tbody>
+</table>
+<p>10-Topic Model (stop words removed)</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 40%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Topic</strong></th>
+<th><strong>Top Keywords</strong></th>
+<th><strong>Interpretation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>wife, daughter, dad, discipline</td>
+<td>Parental favoritism / Discipline</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>money, job, kids, cost-sharing</td>
+<td>Financial Responsibility</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>mom, wedding, pay, funding</td>
+<td>Event Payments &amp; Parental Funding</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>better, life, relationship</td>
+<td>Self-improvement &amp; Leaving Toxicity</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>brother, parents, fairness</td>
+<td>Sibling Fairness &amp; Childcare Burdens</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>divorce, custody, awards</td>
+<td>Updates &amp; Legal Family Issues</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>friend, happy, asshole</td>
+<td>Friendship &amp; Social Conflicts</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>right, eat, son, dietary</td>
+<td>Dietary &amp; Health Disputes</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>support, legal, financial</td>
+<td>Legal Advice &amp; Financial Contracts</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>sister, wedding, dress, kids</td>
+<td>Wedding Attire &amp; Child-free Weddings</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<p>nitially, we tested a baseline model using 5 topics with all words included—but this mainly captured common grammar words, providing no useful insights.</p>
+<p>After removing stop-words (common English words that don’t convey specific meaning), clear and meaningful topics emerged.</p>
+<p>A 5-topic LDA model revealed broad, easily recognizable themes common in AITA discussions:</p>
+<p>Parenting and childcare disputes</p>
+<p>Financial issues, including rent or inheritance disagreements</p>
+<p>Spousal conflicts, particularly involving domestic boundaries and in-laws</p>
+<p>Personal growth, apologies, and self-improvement narratives</p>
+<p>Sibling rivalries and wedding-related arguments</p>
+<p>Expanding to a 10-topic LDA model allowed us to capture more detailed nuances within each broad theme, highlighting specific situations:</p>
+<p>For example, financial issues separated into topics such as job-related money arguments and parental financial support for events.</p>
+<p>Family-related conflicts became more nuanced, distinguishing between sibling fairness and parental favoritism.</p>
+<p>These identified topics align closely with real-world moral conflicts frequently observed on the AITA subreddit, giving strong face validity to our data and supporting our overall analysis.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </div>
 </div>
 </div>
@@ -1062,18 +1209,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
         }
         return false;
       }
-      const clipboard = new window.ClipboardJS('.code-copy-button', {
-        text: function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-        }
-      });
-      clipboard.on('success', function(e) {
+      const onCopySuccess = function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1105,7 +1241,29 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
         }, 1000);
         // clear code selection
         e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
       });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -1113,7 +1271,7 @@ Charles Batsaikhan, William Acosta Lora, Daisy Chan
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {

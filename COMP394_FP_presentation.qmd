@@ -55,6 +55,10 @@ To test this, we compare two tools: Gemini (a large language model via API) and 
     -   Used `bert-base-uncased` in a text classification pipeline
     -   Ran responses through BERT with truncation at 512 tokens
     -   Saved predicted labels: "OP" or "Other"
+- **Unsupervised Topic Check (LDA)**
+  - Ran two LDA setups:
+    1. 5‑topic model *with* stop‑words (baseline sanity‑check)  
+    2. 5‑ and 10‑topic models *without* stop‑words (meaningful themes)
 -   **Step 4: Evaluation**
     -   Compared both models to mapped sentiment labels using:
         -   Confusion matrices
