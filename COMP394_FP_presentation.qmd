@@ -182,16 +182,7 @@ Then, we used a chi-square test to ask: do Gemini and BERT differ meaningfully i
 
 
 ::: notes
-Daisy+ Willaim
-This slide shows the statistical backbone of our model comparison.
 
-The chi-square test checks whether Gemini and BERT make different types of mistakes. For example, are they both bad at identifying criticism of “Other” people? Or does one model tend to overclassify everything as OP?
-
-We built a 2x2x2 contingency table with prediction outcomes from both models: - True OP → predicted OP - True OP → predicted Other - True Other → predicted OP - True Other → predicted Other
-
-The results show a chi-square value of 37.93 and a p-value well below 0.000001. This means the differences between models are **highly statistically significant** — they don’t behave the same, and those differences aren’t random.
-
-This test gives us solid evidence that Gemini and BERT interpret moral judgment in different ways.
 :::
 
 ## Results {.scrollable .smaller}
@@ -305,6 +296,17 @@ This suggests BERT has trouble with context and social nuance. It’s likely tre
 The heatmaps drive this home visually. Gemini’s predictions are more balanced; BERT heavily favors OP classification and misses nuance.
 
 Together, these results show that even among advanced language models, some are better equipped to understand how people judge each other in online discourse.
+
+
+This slide shows the statistical backbone of our model comparison.
+
+The chi-square test checks whether Gemini and BERT make different types of mistakes. For example, are they both bad at identifying criticism of “Other” people? Or does one model tend to overclassify everything as OP?
+
+We built a 2x2x2 contingency table with prediction outcomes from both models: - True OP → predicted OP - True OP → predicted Other - True Other → predicted OP - True Other → predicted Other
+
+The results show a chi-square value of 37.93 and a p-value well below 0.000001. This means the differences between models are **highly statistically significant** — they don’t behave the same, and those differences aren’t random.
+
+This test gives us solid evidence that Gemini and BERT interpret moral judgment in different ways.
 :::
 
 ## Conclusion and Limitations {.scrollable .smaller}
